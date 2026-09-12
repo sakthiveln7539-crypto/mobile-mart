@@ -25,11 +25,16 @@ from models import db, User, Category, Product, CartItem, Order, OrderItem, Revi
 # ---------------------------------------------------------------------------
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'mobile-mart-secret-key-2026'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///mobile_mart.db'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'mobile-mart-dev-secret-change-in-production')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///mobile_mart.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
+
+# Ensure database tables exist when running under a production WSGI server.
+with app.app_context():
+    db.create_all()
+
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 login_manager.login_message_category = 'info'
@@ -817,6 +822,8 @@ def forbidden(e):
 # ---------------------------------------------------------------------------
 
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
-    app.run(debug=True, port=5000)
+    app.run(
+        host='0.0.0.0',
+        port=int(os.environ.get('PORT', 5000)),
+        debug=os.environ.get('FLASK_DEBUG', '0') == '1'
+    )

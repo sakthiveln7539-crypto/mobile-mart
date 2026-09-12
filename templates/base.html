@@ -42,17 +42,6 @@
                 {% for cat in all_categories[:4] %}
                 <li><a href="{{ url_for('products', category=cat.slug) }}">{{ cat.icon }} {{ cat.name }}</a></li>
                 {% endfor %}
-                <li class="mobile-only-nav-item"><a href="{{ url_for('cart') }}">🛒 Shopping Cart {% if cart_count > 0 %}({{ cart_count }}){% endif %}</a></li>
-                {% if current_user.is_authenticated %}
-                    {% if current_user.is_admin %}
-                    <li class="mobile-only-nav-item"><a href="{{ url_for('admin_dashboard') }}">⚙️ Admin Dashboard</a></li>
-                    {% endif %}
-                    <li class="mobile-only-nav-item"><a href="{{ url_for('profile') }}">👤 My Profile ({{ current_user.username }})</a></li>
-                    <li class="mobile-only-nav-item"><a href="{{ url_for('logout') }}">🚪 Logout</a></li>
-                {% else %}
-                    <li class="mobile-only-nav-item"><a href="{{ url_for('login') }}">🔑 Sign In</a></li>
-                    <li class="mobile-only-nav-item"><a href="{{ url_for('register') }}">✨ Sign Up</a></li>
-                {% endif %}
             </ul>
 
             <div class="navbar-actions">
@@ -70,7 +59,6 @@
                     {% endif %}
                 </a>
 
-                <div class="nav-auth-buttons">
                 {% if current_user.is_authenticated %}
                     {% if current_user.is_admin %}
                     <a href="{{ url_for('admin_dashboard') }}" class="btn btn-sm btn-outline">⚙️ Admin</a>
@@ -81,7 +69,6 @@
                     <a href="{{ url_for('login') }}" class="btn btn-sm btn-secondary">Sign In</a>
                     <a href="{{ url_for('register') }}" class="btn btn-sm btn-primary">Sign Up</a>
                 {% endif %}
-                </div>
 
                 <button class="mobile-toggle" id="mobile-toggle" aria-label="Toggle menu">☰</button>
             </div>
