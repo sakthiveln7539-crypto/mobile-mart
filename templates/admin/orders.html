@@ -1,0 +1,118 @@
+{% extends "admin/layout.html" %}
+
+{% block title %}Manage Orders — Admin{% endblock %}
+
+{% block admin_content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
+    <div>
+        <h1 style="margin-bottom: 4px;">📦 Orders Management</h1>
+        <p style="color: var(--text-secondary); font-size: 0.95rem;">Review, filter, and update customer order fulfillment statuses</p>
+    </div>
+</div>
+
+<!-- Filters Bar -->
+<div class="filters-bar" style="margin-bottom: 24px;">
+    <div class="filter-group">
+        <label>Filter by Status:</label>
+        <select onchange="location.href=this.value;">
+            <option value="{{ url_for('admin_orders') }}" {% if not status_filter %}selected{% endif %}>All Statuses</option>
+            <option value="{{ url_for('admin_orders', status='Pending') }}" {% if status_filter == 'Pending' %}selected{% endif %}>Pending</option>
+            <option value="{{ url_for('admin_orders', status='Processing') }}" {% if status_filter == 'Processing' %}selected{% endif %}>Processing</option>
+            <option value="{{ url_for('admin_orders', status='Shipped') }}" {% if status_filter == 'Shipped' %}selected{% endif %}>Shipped</option>
+            <option value="{{ url_for('admin_orders', status='Delivered') }}" {% if status_filter == 'Delivered' %}selected{% endif %}>Delivered</option>
+            <option value="{{ url_for('admin_orders', status='Cancelled') }}" {% if status_filter == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+        </select>
+    </div>
+    <span class="results-count">{{ orders.total }} order{{ 's' if orders.total != 1 }} found</span>
+</div>
+
+<div class="table-responsive" style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); overflow-x: auto;">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Order #</th>
+                <th>Customer</th>
+                <th>Shipping Info</th>
+                <th>Total</th>
+                <th>Payment</th>
+                <th>Status / Update</th>
+                <th>Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if orders.items %}
+            {% for order in orders.items %}
+            <tr>
+                <td>
+                    <strong>#{{ order.id }}</strong>
+                    <div style="font-size: 0.75rem; color: var(--text-muted);">{{ order.created_at.strftime('%b %d, %Y %I:%M %p') }}</div>
+                </td>
+                <td>
+                    <div style="font-weight: 600;">{{ order.shipping_name or order.user.username }}</div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted);">User: @{{ order.user.username }}</div>
+                </td>
+                <td>
+                    <div style="font-size: 0.85rem;">{{ order.shipping_city }}</div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted);">{{ order.shipping_phone }}</div>
+                </td>
+                <td>
+                    <div style="font-weight: 800; font-size: 1rem;">${{ "%.2f"|format(order.total) }}</div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted);">{{ order.item_count }} item{{ 's' if order.item_count != 1 }}</div>
+                </td>
+                <td>
+                    <span style="font-size: 0.85rem;">{{ order.payment_method }}</span>
+                </td>
+                <td>
+                    <form class="status-form" action="{{ url_for('admin_order_status', order_id=order.id) }}" method="POST">
+                        <select name="status" onchange="this.form.submit()" style="border-left: 4px solid {{ order.status_color }};">
+                            <option value="Pending" {% if order.status == 'Pending' %}selected{% endif %}>Pending</option>
+                            <option value="Processing" {% if order.status == 'Processing' %}selected{% endif %}>Processing</option>
+                            <option value="Shipped" {% if order.status == 'Shipped' %}selected{% endif %}>Shipped</option>
+                            <option value="Delivered" {% if order.status == 'Delivered' %}selected{% endif %}>Delivered</option>
+                            <option value="Cancelled" {% if order.status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                        </select>
+                    </form>
+                </td>
+                <td>
+                    <a href="{{ url_for('order_detail', order_id=order.id) }}" class="btn btn-secondary btn-sm" style="padding: 4px 10px; font-size: 0.8rem;">
+                        View
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+            {% else %}
+            <tr>
+                <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 48px;">
+                    No orders matching criteria found.
+                </td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Pagination -->
+{% if orders.pages > 1 %}
+<div class="pagination">
+    {% if orders.has_prev %}
+    <a href="{{ url_for('admin_orders', page=orders.prev_num, status=status_filter) }}">← Prev</a>
+    {% endif %}
+
+    {% for page_num in orders.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+        {% if page_num %}
+            {% if page_num == orders.page %}
+                <span class="current">{{ page_num }}</span>
+            {% else %}
+                <a href="{{ url_for('admin_orders', page=page_num, status=status_filter) }}">{{ page_num }}</a>
+            {% endif %}
+        {% else %}
+            <span>…</span>
+        {% endif %}
+    {% endfor %}
+
+    {% if orders.has_next %}
+    <a href="{{ url_for('admin_orders', page=orders.next_num, status=status_filter) }}">Next →</a>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}

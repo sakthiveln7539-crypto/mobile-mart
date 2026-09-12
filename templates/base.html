@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Mobile Mart — Your premium destination for smartphones, tablets, laptops, and gadgets. Shop the latest tech at unbeatable prices.">
+    <title>{% block title %}Mobile Mart{% endblock %} — Premium Mobile & Gadgets Store</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- ═══════════ NAVBAR ═══════════ -->
+    <nav class="navbar" id="navbar">
+        <div class="navbar-inner">
+            <a href="{{ url_for('index') }}" class="navbar-brand">
+                <span class="brand-logo-pod">
+                    <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" class="brand-logo-svg">
+                        <defs>
+                            <linearGradient id="brand-grad-nav" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#6366f1" />
+                                <stop offset="50%" stop-color="#8b5cf6" />
+                                <stop offset="100%" stop-color="#a855f7" />
+                            </linearGradient>
+                            <linearGradient id="brand-spark-nav" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#38bdf8" />
+                                <stop offset="100%" stop-color="#c084fc" />
+                            </linearGradient>
+                        </defs>
+                        <rect width="36" height="36" rx="10" fill="url(#brand-grad-nav)" />
+                        <rect width="36" height="18" rx="10" fill="white" fill-opacity="0.15" />
+                        <path d="M13 12V10C13 8.34315 14.3431 7 16 7H20C21.6569 7 23 8.34315 23 10V12" stroke="white" stroke-width="2.2" stroke-linecap="round" />
+                        <rect x="8.5" y="12" width="19" height="17" rx="4" fill="#0c0d14" stroke="url(#brand-spark-nav)" stroke-width="1.8" />
+                        <path d="M19.5 15.5L15 21H18.5L17.5 25.5L22 20H18.5L19.5 15.5Z" fill="url(#brand-spark-nav)" />
+                    </svg>
+                </span>
+                Mobile Mart
+            </a>
+
+            <ul class="navbar-nav" id="main-nav">
+                <li><a href="{{ url_for('index') }}" class="{% if request.endpoint == 'index' %}active{% endif %}">🏠 Home</a></li>
+                <li><a href="{{ url_for('products') }}" class="{% if request.endpoint == 'products' %}active{% endif %}">🛍️ Products</a></li>
+                {% for cat in all_categories[:4] %}
+                <li><a href="{{ url_for('products', category=cat.slug) }}">{{ cat.icon }} {{ cat.name }}</a></li>
+                {% endfor %}
+                <li class="mobile-only-nav-item"><a href="{{ url_for('cart') }}">🛒 Shopping Cart {% if cart_count > 0 %}({{ cart_count }}){% endif %}</a></li>
+                {% if current_user.is_authenticated %}
+                    {% if current_user.is_admin %}
+                    <li class="mobile-only-nav-item"><a href="{{ url_for('admin_dashboard') }}">⚙️ Admin Dashboard</a></li>
+                    {% endif %}
+                    <li class="mobile-only-nav-item"><a href="{{ url_for('profile') }}">👤 My Profile ({{ current_user.username }})</a></li>
+                    <li class="mobile-only-nav-item"><a href="{{ url_for('logout') }}">🚪 Logout</a></li>
+                {% else %}
+                    <li class="mobile-only-nav-item"><a href="{{ url_for('login') }}">🔑 Sign In</a></li>
+                    <li class="mobile-only-nav-item"><a href="{{ url_for('register') }}">✨ Sign Up</a></li>
+                {% endif %}
+            </ul>
+
+            <div class="navbar-actions">
+                <form class="nav-search" action="{{ url_for('search') }}" method="GET">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" name="q" placeholder="Search products..." value="{{ request.args.get('q', '') }}" autocomplete="off">
+                </form>
+
+                <a href="{{ url_for('cart') }}" class="cart-btn" data-tooltip="Shopping Cart">
+                    🛒
+                    {% if cart_count > 0 %}
+                    <span class="cart-badge">{{ cart_count }}</span>
+                    {% else %}
+                    <span class="cart-badge" style="display:none">0</span>
+                    {% endif %}
+                </a>
+
+                <div class="nav-auth-buttons">
+                {% if current_user.is_authenticated %}
+                    {% if current_user.is_admin %}
+                    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-sm btn-outline">⚙️ Admin</a>
+                    {% endif %}
+                    <a href="{{ url_for('profile') }}" class="btn btn-sm btn-secondary">👤 {{ current_user.username }}</a>
+                    <a href="{{ url_for('logout') }}" class="btn btn-sm btn-secondary">Logout</a>
+                {% else %}
+                    <a href="{{ url_for('login') }}" class="btn btn-sm btn-secondary">Sign In</a>
+                    <a href="{{ url_for('register') }}" class="btn btn-sm btn-primary">Sign Up</a>
+                {% endif %}
+                </div>
+
+                <button class="mobile-toggle" id="mobile-toggle" aria-label="Toggle menu">☰</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ═══════════ FLASH MESSAGES ═══════════ -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flash-container">
+        {% for category, message in messages %}
+        <div class="flash-message {{ category }}">
+            {% if category == 'success' %}✓{% elif category == 'error' %}✕{% elif category == 'warning' %}⚠{% else %}ℹ{% endif %}
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <!-- ═══════════ ERROR PAGE ═══════════ -->
+    {% if error_code %}
+    <div class="container">
+        <div class="error-page">
+            <div class="error-code">{{ error_code }}</div>
+            <p>{{ error_message }}</p>
+            <a href="{{ url_for('index') }}" class="btn btn-primary">← Back to Home</a>
+        </div>
+    </div>
+    {% else %}
+    <!-- ═══════════ MAIN CONTENT ═══════════ -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    {% endif %}
+
+    <!-- ═══════════ FOOTER ═══════════ -->
+    {% if not error_code %}
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="{{ url_for('index') }}" class="navbar-brand">
+                        <span class="brand-logo-pod">
+                            <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" class="brand-logo-svg">
+                                <defs>
+                                    <linearGradient id="brand-grad-foot" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stop-color="#6366f1" />
+                                        <stop offset="50%" stop-color="#8b5cf6" />
+                                        <stop offset="100%" stop-color="#a855f7" />
+                                    </linearGradient>
+                                    <linearGradient id="brand-spark-foot" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stop-color="#38bdf8" />
+                                        <stop offset="100%" stop-color="#c084fc" />
+                                    </linearGradient>
+                                </defs>
+                                <rect width="36" height="36" rx="10" fill="url(#brand-grad-foot)" />
+                                <rect width="36" height="18" rx="10" fill="white" fill-opacity="0.15" />
+                                <path d="M13 12V10C13 8.34315 14.3431 7 16 7H20C21.6569 7 23 8.34315 23 10V12" stroke="white" stroke-width="2.2" stroke-linecap="round" />
+                                <rect x="8.5" y="12" width="19" height="17" rx="4" fill="#0c0d14" stroke="url(#brand-spark-foot)" stroke-width="1.8" />
+                                <path d="M19.5 15.5L15 21H18.5L17.5 25.5L22 20H18.5L19.5 15.5Z" fill="url(#brand-spark-foot)" />
+                            </svg>
+                        </span>
+                        Mobile Mart
+                    </a>
+                    <p>Your premium destination for the latest smartphones, tablets, laptops, and tech gadgets. Quality products, competitive prices, and exceptional service.</p>
+                </div>
+                <div>
+                    <h4>Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="{{ url_for('index') }}">Home</a></li>
+                        <li><a href="{{ url_for('products') }}">All Products</a></li>
+                        <li><a href="{{ url_for('products', sort='price_low') }}">Deals</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>Categories</h4>
+                    <ul class="footer-links">
+                        {% for cat in all_categories %}
+                        <li><a href="{{ url_for('products', category=cat.slug) }}">{{ cat.icon }} {{ cat.name }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div>
+                    <h4>Account</h4>
+                    <ul class="footer-links">
+                        {% if current_user.is_authenticated %}
+                        <li><a href="{{ url_for('profile') }}">My Profile</a></li>
+                        <li><a href="{{ url_for('orders') }}">My Orders</a></li>
+                        <li><a href="{{ url_for('cart') }}">Shopping Cart</a></li>
+                        {% else %}
+                        <li><a href="{{ url_for('login') }}">Sign In</a></li>
+                        <li><a href="{{ url_for('register') }}">Create Account</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© {{ current_year }} Mobile Mart. All rights reserved. Built with ❤️</p>
+                <p class="footer-owner">Sakthi &amp; Team</p>
+            </div>
+        </div>
+    </footer>
+    {% endif %}
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

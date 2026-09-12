@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% from "components/product_card.html" import product_card %}
+
+{% block title %}{% if search_query %}Search: {{ search_query }}{% elif category_slug %}{{ category_slug|title }}{% else %}All Products{% endif %}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <div class="products-page-header">
+            <h1>
+                {% if search_query %}
+                    Search: "{{ search_query }}"
+                {% elif category_slug %}
+                    {{ category_slug|replace('-', ' ')|title }}
+                {% else %}
+                    All Products
+                {% endif %}
+            </h1>
+        </div>
+        <ul class="breadcrumb">
+            <li><a href="{{ url_for('index') }}">Home</a></li>
+            <li class="separator">›</li>
+            {% if category_slug %}
+            <li><a href="{{ url_for('products') }}">Products</a></li>
+            <li class="separator">›</li>
+            <li class="current">{{ category_slug|replace('-', ' ')|title }}</li>
+            {% else %}
+            <li class="current">Products</li>
+            {% endif %}
+        </ul>
+    </div>
+
+    <!-- Filters -->
+    <form id="filter-form" class="filters-bar" method="GET" action="{{ url_for('products') }}">
+        {% if search_query %}
+        <input type="hidden" name="q" value="{{ search_query }}">
+        {% endif %}
+
+        <div class="filter-group">
+            <label>Category:</label>
+            <select name="category">
+                <option value="">All Categories</option>
+                {% for cat in all_categories %}
+                <option value="{{ cat.slug }}" {% if category_slug == cat.slug %}selected{% endif %}>{{ cat.icon }} {{ cat.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label>Sort:</label>
+            <select name="sort">
+                <option value="newest" {% if sort == 'newest' %}selected{% endif %}>Newest First</option>
+                <option value="price_low" {% if sort == 'price_low' %}selected{% endif %}>Price: Low → High</option>
+                <option value="price_high" {% if sort == 'price_high' %}selected{% endif %}>Price: High → Low</option>
+                <option value="name" {% if sort == 'name' %}selected{% endif %}>Name: A → Z</option>
+                <option value="rating" {% if sort == 'rating' %}selected{% endif %}>Highest Rated</option>
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label>Brand:</label>
+            <select name="brand">
+                <option value="">All Brands</option>
+                {% for b in brands %}
+                <option value="{{ b }}" {% if brand_filter == b %}selected{% endif %}>{{ b }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <span class="results-count">{{ pagination.total }} product{{ 's' if pagination.total != 1 }} found</span>
+    </form>
+
+    <!-- Product Grid -->
+    {% if products %}
+    <div class="grid-4">
+        {% for product in products %}
+        {{ product_card(product) }}
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if pagination.pages > 1 %}
+    <div class="pagination">
+        {% if pagination.has_prev %}
+        <a href="{{ url_for('products', page=pagination.prev_num, category=category_slug, q=search_query, sort=sort, brand=brand_filter) }}">← Prev</a>
+        {% endif %}
+
+        {% for page_num in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+            {% if page_num %}
+                {% if page_num == pagination.page %}
+                    <span class="current">{{ page_num }}</span>
+                {% else %}
+                    <a href="{{ url_for('products', page=page_num, category=category_slug, q=search_query, sort=sort, brand=brand_filter) }}">{{ page_num }}</a>
+                {% endif %}
+            {% else %}
+                <span>…</span>
+            {% endif %}
+        {% endfor %}
+
+        {% if pagination.has_next %}
+        <a href="{{ url_for('products', page=pagination.next_num, category=category_slug, q=search_query, sort=sort, brand=brand_filter) }}">Next →</a>
+        {% endif %}
+    </div>
+    {% endif %}
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">🔍</div>
+        <h3>No Products Found</h3>
+        <p>Try adjusting your search or filters to find what you're looking for.</p>
+        <a href="{{ url_for('products') }}" class="btn btn-primary">View All Products</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

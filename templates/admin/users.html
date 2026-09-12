@@ -1,0 +1,66 @@
+{% extends "admin/layout.html" %}
+
+{% block title %}Manage Users — Admin{% endblock %}
+
+{% block admin_content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
+    <div>
+        <h1 style="margin-bottom: 4px;">👥 Users Management</h1>
+        <p style="color: var(--text-secondary); font-size: 0.95rem;">Registered customer accounts, contact details, and account permissions</p>
+    </div>
+    <span class="results-count" style="font-size: 0.95rem; font-weight: 600;">Total Users: {{ users|length }}</span>
+</div>
+
+<div class="table-responsive" style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); overflow-x: auto;">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Contact</th>
+                <th>Location</th>
+                <th>Role</th>
+                <th>Orders</th>
+                <th>Registered</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div class="review-avatar" style="width: 38px; height: 38px; font-size: 0.9rem;">
+                            {{ user.username[0]|upper }}
+                        </div>
+                        <div>
+                            <div style="font-weight: 600;">{{ user.full_name or user.username }}</div>
+                            <div style="font-size: 0.75rem; color: var(--text-muted);">@{{ user.username }}</div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div>{{ user.email }}</div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted);">{{ user.phone or 'No phone' }}</div>
+                </td>
+                <td>
+                    <div>{{ user.city or '—' }}</div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted); max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ user.address or '' }}</div>
+                </td>
+                <td>
+                    {% if user.is_admin %}
+                    <span class="badge badge-featured" style="font-size: 0.75rem; background: var(--gradient-accent); color: white;">🛡️ Admin</span>
+                    {% else %}
+                    <span style="font-size: 0.75rem; color: var(--text-secondary); background: var(--bg-tertiary); padding: 4px 10px; border-radius: var(--radius-full);">Customer</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <strong>{{ user.orders|length }}</strong>
+                </td>
+                <td style="font-size: 0.85rem; color: var(--text-muted);">
+                    {{ user.created_at.strftime('%b %d, %Y') }}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

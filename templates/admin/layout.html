@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="admin-mobile-nav">
+    <a href="{{ url_for('admin_dashboard') }}" class="{% if request.endpoint == 'admin_dashboard' %}active{% endif %}">📊 Dashboard</a>
+    <a href="{{ url_for('admin_products') }}" class="{% if 'admin_product' in request.endpoint %}active{% endif %}">📱 Products</a>
+    <a href="{{ url_for('admin_orders') }}" class="{% if request.endpoint == 'admin_orders' %}active{% endif %}">📦 Orders</a>
+    <a href="{{ url_for('admin_users') }}" class="{% if request.endpoint == 'admin_users' %}active{% endif %}">👥 Users</a>
+</div>
+
+<div class="admin-layout">
+    <aside class="admin-sidebar">
+        <h3>Admin Panel</h3>
+        <ul class="admin-nav">
+            <li>
+                <a href="{{ url_for('admin_dashboard') }}" class="{% if request.endpoint == 'admin_dashboard' %}active{% endif %}">
+                    <span>📊</span> Dashboard
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('admin_products') }}" class="{% if 'admin_product' in request.endpoint %}active{% endif %}">
+                    <span>📱</span> Products
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('admin_orders') }}" class="{% if request.endpoint == 'admin_orders' %}active{% endif %}">
+                    <span>📦</span> Orders
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('admin_users') }}" class="{% if request.endpoint == 'admin_users' %}active{% endif %}">
+                    <span>👥</span> Users
+                </a>
+            </li>
+        </ul>
+
+        <hr style="border: none; border-top: 1px solid var(--border-color); margin: 24px 16px;">
+
+        <h3>Quick Links</h3>
+        <ul class="admin-nav">
+            <li>
+                <a href="{{ url_for('admin_product_new') }}">
+                    <span>➕</span> Add Product
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('products') }}" target="_blank">
+                    <span>🛍️</span> View Store
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <div class="admin-content">
+        {% block admin_content %}{% endblock %}
+    </div>
+</div>
+{% endblock %}

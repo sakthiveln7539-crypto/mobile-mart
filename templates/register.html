@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}Create Account{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+    <div class="auth-card fade-in">
+        <h1>Create Account</h1>
+        <p class="auth-subtitle">Join Mobile Mart for the best deals on tech</p>
+
+        <form method="POST" action="{{ url_for('register') }}">
+            <div class="form-group">
+                <label for="full_name">Full Name</label>
+                <input type="text" id="full_name" name="full_name" class="form-control"
+                       placeholder="Your full name (letters only)" pattern="[A-Za-z\s]*" title="Letters only (A-Z, a-z)"
+                       value="{{ request.form.get('full_name', '') }}">
+                <small id="fullname-error" class="field-error" style="display:none; color:#ef4444; font-size:0.82rem; margin-top:4px;">
+                    Letters only — full name must contain only letters (A-Z, a-z).
+                </small>
+            </div>
+
+            <div class="form-group">
+                <label for="username">Username *</label>
+                <input type="text" id="username" name="username" class="form-control"
+                       placeholder="Choose a username (letters only, min 3 characters)" required
+                       pattern="[A-Za-z]{3,}" title="Letters only (A-Z, a-z), minimum 3 characters"
+                       value="{{ request.form.get('username', '') }}">
+                <small id="username-error" class="field-error" style="display:none; color:#ef4444; font-size:0.82rem; margin-top:4px;">
+                    Letters only — username must contain only letters (A-Z, a-z).
+                </small>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email *</label>
+                <input type="email" id="email" name="email" class="form-control"
+                       placeholder="your@email.com" required
+                       value="{{ request.form.get('email', '') }}">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="password">Password *</label>
+                    <input type="password" id="password" name="password" class="form-control"
+                           placeholder="Min 6 characters" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirm_password">Confirm Password *</label>
+                    <input type="password" id="confirm_password" name="confirm_password" class="form-control"
+                           placeholder="Re-enter password" required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg btn-block">Create Account</button>
+        </form>
+
+        <div class="auth-footer">
+            Already have an account? <a href="{{ url_for('login') }}">Sign in</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function() {
+    function setupLetterOnlyValidation(inputId, errorId, regex) {
+        const input = document.getElementById(inputId);
+        const errorMsg = document.getElementById(errorId);
+        if (!input || !errorMsg) return;
+
+        input.addEventListener('input', function() {
+            const val = this.value;
+            if (val.length > 0 && !regex.test(val)) {
+                errorMsg.style.display = 'block';
+                this.style.borderColor = '#ef4444';
+            } else {
+                errorMsg.style.display = 'none';
+                this.style.borderColor = '';
+            }
+        });
+    }
+
+    setupLetterOnlyValidation('full_name', 'fullname-error', /^[A-Za-z\s]+$/);
+    setupLetterOnlyValidation('username', 'username-error', /^[A-Za-z]+$/);
+})();
+</script>
+{% endblock %}

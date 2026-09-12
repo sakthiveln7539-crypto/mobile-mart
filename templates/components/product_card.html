@@ -1,0 +1,55 @@
+{# Reusable product card macro #}
+{% macro product_card(product) %}
+<div class="card product-card fade-in">
+    <a href="{{ url_for('product_detail', slug=product.slug) }}" class="product-image">
+        {% if product.discount_price %}
+        <span class="badge badge-sale">-{{ product.discount_percent }}%</span>
+        {% elif product.featured %}
+        <span class="badge badge-featured">⭐ Featured</span>
+        {% endif %}
+        <img src="{{ product.image_url }}" alt="{{ product.name }}" loading="lazy"
+             onerror="this.style.display='none'; this.parentElement.querySelector('.placeholder-icon').style.display='block';">
+        <span class="placeholder-icon" style="display:none">
+            {% if product.category.slug == 'smartphones' %}📱
+            {% elif product.category.slug == 'tablets' %}📟
+            {% elif product.category.slug == 'laptops' %}💻
+            {% elif product.category.slug == 'accessories' %}🔌
+            {% elif product.category.slug == 'smartwatches' %}⌚
+            {% elif product.category.slug == 'audio' %}🎧
+            {% else %}📦{% endif %}
+        </span>
+    </a>
+    <div class="product-info">
+        <span class="product-brand">{{ product.brand }}</span>
+        <h3 class="product-name">
+            <a href="{{ url_for('product_detail', slug=product.slug) }}">{{ product.name }}</a>
+        </h3>
+        <div class="product-rating">
+            <span class="stars">
+                {% for i in range(1, 6) %}{% if i <= product.rating|round(0, 'floor')|int %}★{% else %}☆{% endif %}{% endfor %}
+            </span>
+            <span class="count">({{ product.review_count }})</span>
+        </div>
+        <div class="product-pricing">
+            {% if product.discount_price %}
+            <span class="current-price">${{ "%.2f"|format(product.discount_price) }}</span>
+            <span class="original-price">${{ "%.2f"|format(product.price) }}</span>
+            {% else %}
+            <span class="current-price">${{ "%.2f"|format(product.price) }}</span>
+            {% endif %}
+        </div>
+        <div class="product-actions">
+            <a href="{{ url_for('product_detail', slug=product.slug) }}" class="btn btn-secondary btn-sm">View</a>
+            {% if product.in_stock %}
+            <form class="ajax-add-cart" action="{{ url_for('cart_add') }}" method="POST" style="flex:1">
+                <input type="hidden" name="product_id" value="{{ product.id }}">
+                <input type="hidden" name="quantity" value="1">
+                <button type="submit" class="btn btn-primary btn-sm btn-block">🛒 Add</button>
+            </form>
+            {% else %}
+            <button class="btn btn-secondary btn-sm" disabled style="flex:1">Out of Stock</button>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endmacro %}

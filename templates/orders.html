@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}My Orders{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>📦 My Orders</h1>
+        <p>Track and view your order history</p>
+    </div>
+
+    {% if orders %}
+    <div style="padding-bottom: 60px;">
+        {% for order in orders %}
+        <a href="{{ url_for('order_detail', order_id=order.id) }}" class="order-card" style="display: block; text-decoration: none; color: inherit;">
+            <div class="order-card-header">
+                <span class="order-id">Order #{{ order.id }}</span>
+                <span class="order-status" style="background: {{ order.status_color }};">{{ order.status }}</span>
+            </div>
+            <div class="order-meta">
+                <span>📅 {{ order.created_at.strftime('%B %d, %Y') }}</span>
+                <span>📦 {{ order.item_count }} item{{ 's' if order.item_count != 1 }}</span>
+                <span>💰 ${{ "%.2f"|format(order.total) }}</span>
+                <span>💳 {{ order.payment_method }}</span>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">📦</div>
+        <h3>No Orders Yet</h3>
+        <p>You haven't placed any orders yet. Start shopping to see your orders here!</p>
+        <a href="{{ url_for('products') }}" class="btn btn-primary btn-lg">Start Shopping</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

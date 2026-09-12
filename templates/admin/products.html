@@ -1,0 +1,128 @@
+{% extends "admin/layout.html" %}
+
+{% block title %}Manage Products — Admin{% endblock %}
+
+{% block admin_content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
+    <div>
+        <h1 style="margin-bottom: 4px;">📱 Products Management</h1>
+        <p style="color: var(--text-secondary); font-size: 0.95rem;">Manage catalog items, pricing, inventory stock, and specifications</p>
+    </div>
+    <a href="{{ url_for('admin_product_new') }}" class="btn btn-primary">➕ Add New Product</a>
+</div>
+
+<div class="table-responsive" style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); overflow-x: auto;">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>Stock</th>
+                <th>Status</th>
+                <th>Rating</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if products.items %}
+            {% for p in products.items %}
+            <tr>
+                <td>
+                    <div class="product-cell">
+                        <div class="product-thumb">
+                            <img src="{{ p.image_url }}" alt="{{ p.name }}"
+                                 onerror="this.parentElement.textContent='{{ p.category.icon }}'">
+                        </div>
+                        <div>
+                            <div style="font-weight: 600;">
+                                <a href="{{ url_for('product_detail', slug=p.slug) }}" target="_blank" style="color: var(--text-primary);">
+                                    {{ p.name }}
+                                </a>
+                            </div>
+                            <div style="font-size: 0.75rem; color: var(--text-accent);">{{ p.brand }}</div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <span style="font-size: 0.85rem; color: var(--text-secondary);">
+                        {{ p.category.icon }} {{ p.category.name }}
+                    </span>
+                </td>
+                <td>
+                    {% if p.discount_price %}
+                    <div><strong>${{ "%.2f"|format(p.discount_price) }}</strong></div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted); text-decoration: line-through;">${{ "%.2f"|format(p.price) }}</div>
+                    {% else %}
+                    <strong>${{ "%.2f"|format(p.price) }}</strong>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if p.stock > 10 %}
+                    <span style="color: var(--success); font-weight: 600;">{{ p.stock }} in stock</span>
+                    {% elif p.stock > 0 %}
+                    <span style="color: var(--warning); font-weight: 600;">⚠️ {{ p.stock }} left</span>
+                    {% else %}
+                    <span style="color: var(--error); font-weight: 600;">❌ Out of stock</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if p.featured %}
+                    <span class="badge badge-featured" style="font-size: 0.75rem;">⭐ Featured</span>
+                    {% else %}
+                    <span style="font-size: 0.75rem; color: var(--text-muted);">Standard</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <span style="color: #fbbf24; font-size: 0.85rem;">★ {{ p.rating }}</span>
+                    <span style="font-size: 0.75rem; color: var(--text-muted);">({{ p.review_count }})</span>
+                </td>
+                <td>
+                    <div class="table-actions">
+                        <a href="{{ url_for('admin_product_edit', product_id=p.id) }}" class="btn btn-secondary btn-sm" title="Edit">
+                            ✏️ Edit
+                        </a>
+                        <form action="{{ url_for('admin_product_delete', product_id=p.id) }}" method="POST"
+                              onsubmit="return confirm('Are you sure you want to delete \'{{ p.name }}\'?');" style="display:inline;">
+                            <button type="submit" class="btn btn-danger btn-sm" title="Delete">🗑️</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+            {% else %}
+            <tr>
+                <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 48px;">
+                    No products found in database. <a href="{{ url_for('admin_product_new') }}">Add your first product</a>.
+                </td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Pagination -->
+{% if products.pages > 1 %}
+<div class="pagination">
+    {% if products.has_prev %}
+    <a href="{{ url_for('admin_products', page=products.prev_num) }}">← Prev</a>
+    {% endif %}
+
+    {% for page_num in products.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+        {% if page_num %}
+            {% if page_num == products.page %}
+                <span class="current">{{ page_num }}</span>
+            {% else %}
+                <a href="{{ url_for('admin_products', page=page_num) }}">{{ page_num }}</a>
+            {% endif %}
+        {% else %}
+            <span>…</span>
+        {% endif %}
+    {% endfor %}
+
+    {% if products.has_next %}
+    <a href="{{ url_for('admin_products', page=products.next_num) }}">Next →</a>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}

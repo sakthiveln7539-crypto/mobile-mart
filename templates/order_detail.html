@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Order #{{ order.id }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-bottom: 60px;">
+    <div class="page-header">
+        <div class="order-detail-header">
+            <div>
+                <h1>Order #{{ order.id }}</h1>
+                <ul class="breadcrumb" style="padding:0; margin-top: 8px;">
+                    <li><a href="{{ url_for('index') }}">Home</a></li>
+                    <li class="separator">›</li>
+                    <li><a href="{{ url_for('orders') }}">My Orders</a></li>
+                    <li class="separator">›</li>
+                    <li class="current">Order #{{ order.id }}</li>
+                </ul>
+            </div>
+            <span class="order-status" style="background: {{ order.status_color }}; font-size: 0.9rem; padding: 6px 18px;">{{ order.status }}</span>
+        </div>
+    </div>
+
+    <div class="order-detail-grid">
+        <div class="order-info-card">
+            <h3>📦 Shipping Details</h3>
+            <p><strong>Name:</strong> {{ order.shipping_name }}</p>
+            <p><strong>Address:</strong> {{ order.shipping_address }}</p>
+            <p><strong>City:</strong> {{ order.shipping_city }}</p>
+            <p><strong>Phone:</strong> {{ order.shipping_phone }}</p>
+        </div>
+        <div class="order-info-card">
+            <h3>💳 Payment Info</h3>
+            <p><strong>Method:</strong> {{ order.payment_method }}</p>
+            <p><strong>Total:</strong> ${{ "%.2f"|format(order.total) }}</p>
+            <p><strong>Date:</strong> {{ order.created_at.strftime('%B %d, %Y at %I:%M %p') }}</p>
+            {% if order.notes %}
+            <p><strong>Notes:</strong> {{ order.notes }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="table-responsive" style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); overflow-x: auto;">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Qty</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in order.items %}
+                <tr>
+                    <td>
+                        <div class="product-cell">
+                            <div class="product-thumb">
+                                <img src="{{ item.product.image_url }}" alt="{{ item.product.name }}"
+                                     onerror="this.parentElement.textContent='📦'">
+                            </div>
+                            <div>
+                                <a href="{{ url_for('product_detail', slug=item.product.slug) }}" style="font-weight: 600;">{{ item.product.name }}</a>
+                                <div style="font-size: 0.8rem; color: var(--text-muted);">{{ item.product.brand }}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>${{ "%.2f"|format(item.price) }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td style="font-weight: 700;">${{ "%.2f"|format(item.subtotal) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3" style="text-align: right; font-weight: 700; font-size: 1.1rem;">Total</td>
+                    <td style="font-weight: 800; font-size: 1.1rem;">${{ "%.2f"|format(order.total) }}</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <div style="margin-top: 24px;">
+        <a href="{{ url_for('orders') }}" class="btn btn-secondary">← Back to Orders</a>
+    </div>
+</div>
+{% endblock %}

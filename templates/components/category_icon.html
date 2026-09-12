@@ -1,0 +1,42 @@
+{% macro category_icon(slug, icon_emoji='', size='md') %}
+<div class="cat-icon-badge cat-icon-{{ slug }} size-{{ size }}">
+    {% if slug == 'smartphones' %}
+        <svg class="cat-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="6" y="2" width="12" height="20" rx="3.2"/>
+            <line x1="10" y1="5" x2="14" y2="5" stroke-opacity="0.7"/>
+            <circle cx="12" cy="18" r="1" fill="currentColor"/>
+        </svg>
+    {% elif slug == 'tablets' %}
+        <svg class="cat-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="15" rx="2.5"/>
+            <line x1="12" y1="21" x2="12.01" y2="21" stroke-width="2.5"/>
+            <line x1="8" y1="6" x2="16" y2="6" stroke-opacity="0.5"/>
+        </svg>
+    {% elif slug == 'laptops' %}
+        <svg class="cat-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v9H4V6z"/>
+            <path d="M2 17a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2H2v2z"/>
+            <line x1="10" y1="16" x2="14" y2="16" stroke-opacity="0.8"/>
+        </svg>
+    {% elif slug == 'accessories' %}
+        <svg class="cat-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+        </svg>
+    {% elif slug == 'smartwatches' %}
+        <svg class="cat-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="6" y="6" width="12" height="12" rx="3.5"/>
+            <path d="M9 2h6v4H9zM9 18h6v4H9z"/>
+            <circle cx="12" cy="12" r="3"/>
+            <polyline points="12 10 12 12 13.5 13.5"/>
+        </svg>
+    {% elif slug == 'audio' %}
+        <svg class="cat-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 14v3a3 3 0 0 0 3 3h1a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2H4a1 1 0 0 0-1 1z"/>
+            <path d="M21 14v3a3 3 0 0 1-3 3h-1a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h3a1 1 0 0 1 1 1z"/>
+            <path d="M3 14a9 9 0 0 1 18 0"/>
+        </svg>
+    {% else %}
+        <span class="cat-emoji-fallback">{{ icon_emoji or '📦' }}</span>
+    {% endif %}
+</div>
+{% endmacro %}

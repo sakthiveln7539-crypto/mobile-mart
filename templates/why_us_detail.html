@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}{{ feature.title }}{% endblock %}
+
+{% block content %}
+<!-- ═══════════ BREADCRUMBS ═══════════ -->
+<div class="container" style="padding-top: 24px;">
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+        <a href="{{ url_for('index') }}">Home</a>
+        <span class="separator">/</span>
+        <span class="current">Why Choose Us</span>
+        <span class="separator">/</span>
+        <span class="current">{{ feature.title }}</span>
+    </nav>
+</div>
+
+<!-- ═══════════ FEATURE HERO BANNER ═══════════ -->
+<section class="section" style="padding-top: 20px; padding-bottom: 40px;">
+    <div class="container">
+        <div class="feature-hero-card">
+            <div class="cat-icon-badge {{ feature.icon_class }} size-xl">
+                <svg class="cat-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    {{ feature.icon_svg | safe }}
+                </svg>
+            </div>
+            <div class="feature-badge">{{ feature.badge }}</div>
+            <h1 class="feature-title">{{ feature.title }}</h1>
+            <p class="feature-subtitle">{{ feature.hero_subtitle }}</p>
+            <div class="feature-cta-row">
+                <a href="{{ url_for('products') }}" class="btn btn-primary btn-lg">🛍️ Shop Products Now</a>
+                <a href="{{ url_for('index') }}" class="btn btn-outline btn-lg">← Back to Home</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════ HIGHLIGHTS GRID ═══════════ -->
+<section class="section" style="background: var(--bg-secondary);">
+    <div class="container">
+        <div class="section-header">
+            <h2>Key Benefits & Commitments</h2>
+            <p>Why thousands of tech enthusiasts trust Mobile Mart for their everyday purchases</p>
+        </div>
+        <div class="grid-4">
+            {% for item in feature.highlights %}
+            <div class="highlight-card">
+                <span class="highlight-icon">{{ item.icon }}</span>
+                <h3 class="highlight-title">{{ item.title }}</h3>
+                <p class="highlight-desc">{{ item.desc }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════ DETAILED BREAKDOWN & GUARANTEES ═══════════ -->
+<section class="section">
+    <div class="container">
+        <div class="feature-details-wrapper">
+            <div class="feature-details-card">
+                <h2>📋 How It Works & Our Promise</h2>
+                <ul class="feature-details-list">
+                    {% for detail in feature.details %}
+                    <li>
+                        <span class="check-bullet">✓</span>
+                        <span>{{ detail }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            {% if feature.faqs %}
+            <div class="feature-faq-card">
+                <h2>❓ Frequently Asked Questions</h2>
+                <div class="faq-list">
+                    {% for faq in feature.faqs %}
+                    <div class="faq-item">
+                        <div class="faq-question">Q: {{ faq.q }}</div>
+                        <div class="faq-answer">{{ faq.a }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════ OTHER WHY CHOOSE US FEATURES ═══════════ -->
+<section class="section" style="background: var(--bg-secondary);">
+    <div class="container">
+        <div class="section-header">
+            <h2>Explore Other Reasons to Choose Us</h2>
+            <p>Learn more about our customer-first policies and quality guarantees</p>
+        </div>
+        <div class="grid-3" style="max-width: 960px; margin: 0 auto;">
+            {% for item in other_features %}
+            <a href="{{ url_for('why_us_detail', feature_slug=item.slug) }}" class="category-card feature-card-link">
+                <div class="cat-icon-badge {{ item.icon_class }}">
+                    <svg class="cat-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        {{ item.icon_svg | safe }}
+                    </svg>
+                </div>
+                <span class="cat-name">{{ item.title }}</span>
+                <span class="cat-count">{{ item.short_desc }}</span>
+                <span class="feature-learn-more" style="margin-top: 8px;">Explore details →</span>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

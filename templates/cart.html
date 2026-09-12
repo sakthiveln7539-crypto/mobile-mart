@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}Shopping Cart{% endblock %}
+
+{% block content %}
+<div class="container cart-page">
+    <div class="page-header">
+        <h1>🛒 Shopping Cart</h1>
+        <ul class="breadcrumb">
+            <li><a href="{{ url_for('index') }}">Home</a></li>
+            <li class="separator">›</li>
+            <li class="current">Cart</li>
+        </ul>
+    </div>
+
+    {% if items %}
+    <div class="cart-layout">
+        <div class="cart-items">
+            {% for item in items %}
+            <div class="cart-item fade-in">
+                <a href="{{ url_for('product_detail', slug=item.product.slug) }}" class="cart-item-image">
+                    <img src="{{ item.product.image_url }}" alt="{{ item.product.name }}"
+                         onerror="this.style.display='none'; this.parentElement.querySelector('.placeholder-icon').style.display='block';">
+                    <span class="placeholder-icon" style="display:none">📦</span>
+                </a>
+                <div class="cart-item-details">
+                    <a href="{{ url_for('product_detail', slug=item.product.slug) }}" class="cart-item-name" style="color: var(--text-primary);">{{ item.product.name }}</a>
+                    <span class="cart-item-brand">{{ item.product.brand }}</span>
+                    <div class="cart-item-bottom">
+                        <div style="display: flex; align-items: center; gap: 16px;">
+                            <form class="cart-qty-form" action="{{ url_for('cart_update') }}" method="POST">
+                                <input type="hidden" name="item_id" value="{{ item.id }}">
+                                <div class="quantity-controls">
+                                    <button type="button" class="qty-minus">−</button>
+                                    <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.stock }}">
+                                    <button type="button" class="qty-plus">+</button>
+                                </div>
+                            </form>
+                            <span class="cart-item-price">${{ "%.2f"|format(item.product.effective_price * item.quantity) }}</span>
+                        </div>
+                        <form class="cart-remove-form" action="{{ url_for('cart_remove') }}" method="POST">
+                            <input type="hidden" name="item_id" value="{{ item.id }}">
+                            <button type="submit" class="cart-item-remove">✕ Remove</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="cart-summary">
+            <h3>Order Summary</h3>
+            <div class="summary-row">
+                <span class="label">Items ({{ current_user.cart_count }})</span>
+                <span class="value">${{ "%.2f"|format(current_user.cart_total) }}</span>
+            </div>
+            <div class="summary-row">
+                <span class="label">Shipping</span>
+                <span class="value" style="color: var(--success);">Free</span>
+            </div>
+            <div class="summary-total">
+                <span>Total</span>
+                <span class="cart-total-value">${{ "%.2f"|format(current_user.cart_total) }}</span>
+            </div>
+            <div style="margin-top: 24px;">
+                <a href="{{ url_for('checkout') }}" class="btn btn-primary btn-lg btn-block">Proceed to Checkout →</a>
+            </div>
+            <div style="margin-top: 12px;">
+                <a href="{{ url_for('products') }}" class="btn btn-secondary btn-block">← Continue Shopping</a>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">🛒</div>
+        <h3>Your Cart is Empty</h3>
+        <p>Looks like you haven't added any items to your cart yet.</p>
+        <a href="{{ url_for('products') }}" class="btn btn-primary btn-lg">Start Shopping</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

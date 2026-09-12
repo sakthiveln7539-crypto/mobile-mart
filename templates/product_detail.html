@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+{% from "components/product_card.html" import product_card %}
+
+{% block title %}{{ product.name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <ul class="breadcrumb">
+        <li><a href="{{ url_for('index') }}">Home</a></li>
+        <li class="separator">›</li>
+        <li><a href="{{ url_for('products') }}">Products</a></li>
+        <li class="separator">›</li>
+        <li><a href="{{ url_for('products', category=product.category.slug) }}">{{ product.category.name }}</a></li>
+        <li class="separator">›</li>
+        <li class="current">{{ product.name }}</li>
+    </ul>
+
+    <!-- ═══════════ PRODUCT DETAIL ═══════════ -->
+    <div class="product-detail">
+        <div class="product-gallery">
+            <img src="{{ product.image_url }}" alt="{{ product.name }}"
+                 onerror="this.style.display='none'; this.parentElement.querySelector('.placeholder-icon').style.display='block';">
+            <span class="placeholder-icon" style="display:none; font-size: 8rem; opacity: 0.6;">
+                {% if product.category.slug == 'smartphones' %}📱{% elif product.category.slug == 'tablets' %}📟{% elif product.category.slug == 'laptops' %}💻{% elif product.category.slug == 'accessories' %}🔌{% elif product.category.slug == 'smartwatches' %}⌚{% elif product.category.slug == 'audio' %}🎧{% else %}📦{% endif %}
+            </span>
+        </div>
+
+        <div class="product-detail-info">
+            <div class="brand-label">{{ product.brand }}</div>
+            <h1>{{ product.name }}</h1>
+
+            <div class="detail-rating">
+                <span class="stars">
+                    {% for i in range(1, 6) %}{% if i <= product.rating|round(0, 'floor')|int %}★{% else %}☆{% endif %}{% endfor %}
+                </span>
+                <span class="rating-text">{{ product.rating }} out of 5 ({{ product.review_count }} review{{ 's' if product.review_count != 1 }})</span>
+            </div>
+
+            <div class="detail-pricing">
+                {% if product.discount_price %}
+                <span class="current-price">${{ "%.2f"|format(product.discount_price) }}</span>
+                <span class="original-price">${{ "%.2f"|format(product.price) }}</span>
+                <span class="save-badge">Save {{ product.discount_percent }}%</span>
+                {% else %}
+                <span class="current-price">${{ "%.2f"|format(product.price) }}</span>
+                {% endif %}
+            </div>
+
+            <p class="detail-description">{{ product.description }}</p>
+
+            <div class="stock-status {% if product.in_stock %}in-stock{% else %}out-of-stock{% endif %}">
+                <span class="dot"></span>
+                {% if product.in_stock %}
+                    In Stock ({{ product.stock }} available)
+                {% else %}
+                    Out of Stock
+                {% endif %}
+            </div>
+
+            {% if product.in_stock %}
+            <form class="ajax-add-cart" action="{{ url_for('cart_add') }}" method="POST">
+                <input type="hidden" name="product_id" value="{{ product.id }}">
+                <div class="quantity-selector">
+                    <label>Quantity:</label>
+                    <div class="quantity-controls">
+                        <button type="button" class="qty-minus">−</button>
+                        <input type="number" name="quantity" value="1" min="1" max="{{ product.stock }}">
+                        <button type="button" class="qty-plus">+</button>
+                    </div>
+                </div>
+                <div class="detail-actions">
+                    <button type="submit" class="btn btn-primary btn-lg">🛒 Add to Cart</button>
+                    <a href="{{ url_for('cart') }}" class="btn btn-secondary btn-lg">View Cart</a>
+                </div>
+            </form>
+            {% else %}
+            <div class="detail-actions">
+                <button class="btn btn-secondary btn-lg" disabled>Out of Stock</button>
+            </div>
+            {% endif %}
+
+            <!-- Specifications -->
+            {% if specs %}
+            <h3 style="margin-top: 32px; font-size: 1.1rem; font-weight: 700;">📋 Specifications</h3>
+            <table class="specs-table">
+                {% for key, value in specs.items() %}
+                <tr>
+                    <th>{{ key }}</th>
+                    <td>{{ value }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- ═══════════ REVIEWS ═══════════ -->
+    <section class="reviews-section">
+        <h2 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 24px;">
+            💬 Customer Reviews ({{ reviews|length }})
+        </h2>
+
+        {% if reviews %}
+        {% for review in reviews %}
+        <div class="review-card fade-in">
+            <div class="review-header">
+                <div class="review-user">
+                    <div class="review-avatar">{{ review.user.username[0]|upper }}</div>
+                    <div>
+                        <div class="review-name">{{ review.user.username }}</div>
+                        <div class="review-date">{{ review.created_at.strftime('%b %d, %Y') }}</div>
+                    </div>
+                </div>
+                <div class="review-stars">
+                    {% for i in range(1, 6) %}{% if i <= review.rating %}★{% else %}☆{% endif %}{% endfor %}
+                </div>
+            </div>
+            <p class="review-comment">{{ review.comment }}</p>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="review-card">
+            <p class="review-comment" style="text-align: center; color: var(--text-muted);">
+                No reviews yet. Be the first to review this product!
+            </p>
+        </div>
+        {% endif %}
+
+        <!-- Review form -->
+        {% if current_user.is_authenticated and not user_reviewed %}
+        <div class="review-form">
+            <h3>✍️ Write a Review</h3>
+            <form action="{{ url_for('add_review', product_id=product.id) }}" method="POST">
+                <div class="form-group">
+                    <label>Your Rating</label>
+                    <div class="star-rating">
+                        <input type="radio" id="star5" name="rating" value="5"><label for="star5">★</label>
+                        <input type="radio" id="star4" name="rating" value="4"><label for="star4">★</label>
+                        <input type="radio" id="star3" name="rating" value="3" checked><label for="star3">★</label>
+                        <input type="radio" id="star2" name="rating" value="2"><label for="star2">★</label>
+                        <input type="radio" id="star1" name="rating" value="1"><label for="star1">★</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="comment">Your Review</label>
+                    <textarea name="comment" id="comment" class="form-control" placeholder="Share your experience with this product..." rows="4"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit Review</button>
+            </form>
+        </div>
+        {% elif not current_user.is_authenticated %}
+        <div class="review-form" style="text-align: center;">
+            <p style="color: var(--text-secondary); margin-bottom: 16px;">Please sign in to write a review.</p>
+            <a href="{{ url_for('login') }}" class="btn btn-outline">Sign In</a>
+        </div>
+        {% endif %}
+    </section>
+
+    <!-- ═══════════ RELATED PRODUCTS ═══════════ -->
+    {% if related %}
+    <section class="related-section">
+        <div class="section-header">
+            <h2>Related Products</h2>
+            <p>You might also like these from {{ product.category.name }}</p>
+        </div>
+        <div class="grid-4">
+            {% for p in related %}
+            {{ product_card(p) }}
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+</div>
+{% endblock %}

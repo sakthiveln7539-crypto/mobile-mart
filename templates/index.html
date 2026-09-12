@@ -1,0 +1,290 @@
+{% extends "base.html" %}
+{% from "components/product_card.html" import product_card %}
+{% from "components/category_icon.html" import category_icon %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<!-- ═══════════ AI-POWERED ROTATING HERO BANNER ═══════════ -->
+<section class="hero-carousel" id="hero-carousel" aria-label="Featured promotions">
+    <!-- Slide 1: Flagship Smartphones -->
+    <div class="carousel-slide active" data-slide="0">
+        <div class="slide-bg">
+            <img src="{{ url_for('static', filename='images/iphone-18-pro-max.png') }}" alt="iPhone 18 Pro Max" class="slide-product-img slide-img-right" loading="eager">
+            <div class="slide-gradient" style="--slide-accent: #6366f1; --slide-accent-alt: #a855f7;"></div>
+        </div>
+        <div class="container slide-content">
+            <div class="slide-badge">🔥 HOT DEAL — UP TO 20% OFF</div>
+            <h1 class="slide-title">
+                iPhone 18<br>
+                <span class="gradient-text">Pro Max</span>
+            </h1>
+            <p class="slide-desc">Experience the ultimate in mobile photography and performance. Titanium design, A20 Bionic chip, and the most advanced camera system ever.</p>
+            <div class="slide-price-row">
+                <span class="slide-price-old">$1,499</span>
+                <span class="slide-price-new">$1,199</span>
+                <span class="slide-save-badge">SAVE $300</span>
+            </div>
+            <div class="slide-cta-group">
+                <a href="{{ url_for('products') }}" class="btn btn-primary btn-lg slide-cta">🛍️ Shop Now</a>
+                <a href="{{ url_for('products', category='smartphones') }}" class="btn btn-glass btn-lg slide-cta">Explore Smartphones →</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 2: Premium Laptops -->
+    <div class="carousel-slide" data-slide="1">
+        <div class="slide-bg">
+            <img src="{{ url_for('static', filename='images/macbook-pro-16-m5-max.png') }}" alt="MacBook Pro 16 M5 Max" class="slide-product-img slide-img-right" loading="lazy">
+            <div class="slide-gradient" style="--slide-accent: #3b82f6; --slide-accent-alt: #06b6d4;"></div>
+        </div>
+        <div class="container slide-content">
+            <div class="slide-badge">💻 NEW ARRIVAL — LIMITED STOCK</div>
+            <h1 class="slide-title">
+                MacBook Pro 16″<br>
+                <span class="gradient-text" style="background: linear-gradient(135deg, #3b82f6, #06b6d4); -webkit-background-clip: text; background-clip: text;">M5 Max</span>
+            </h1>
+            <p class="slide-desc">Unleash pro-level performance with the M5 Max chip. Liquid Retina XDR display, up to 48GB unified memory, and all-day battery life.</p>
+            <div class="slide-price-row">
+                <span class="slide-price-old">$3,499</span>
+                <span class="slide-price-new">$2,999</span>
+                <span class="slide-save-badge" style="background: linear-gradient(135deg, #3b82f6, #06b6d4);">SAVE $500</span>
+            </div>
+            <div class="slide-cta-group">
+                <a href="{{ url_for('products') }}" class="btn btn-primary btn-lg slide-cta" style="background: linear-gradient(135deg, #3b82f6, #06b6d4);">🛍️ Shop Now</a>
+                <a href="{{ url_for('products', category='laptops') }}" class="btn btn-glass btn-lg slide-cta">Explore Laptops →</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 3: Wearables & Audio -->
+    <div class="carousel-slide" data-slide="2">
+        <div class="slide-bg">
+            <img src="{{ url_for('static', filename='images/apple-watch-ultra-3.png') }}" alt="Apple Watch Ultra 3" class="slide-product-img slide-img-right" loading="lazy">
+            <div class="slide-gradient" style="--slide-accent: #f59e0b; --slide-accent-alt: #ef4444;"></div>
+        </div>
+        <div class="container slide-content">
+            <div class="slide-badge" style="background: linear-gradient(135deg, rgba(245,158,11,0.2), rgba(239,68,68,0.2)); border-color: rgba(245,158,11,0.4);">⌚ MEGA SALE — FLAT 25% OFF</div>
+            <h1 class="slide-title">
+                Smart Wearables<br>
+                <span class="gradient-text" style="background: linear-gradient(135deg, #f59e0b, #ef4444); -webkit-background-clip: text; background-clip: text;">Collection</span>
+            </h1>
+            <p class="slide-desc">From Apple Watch Ultra 3 to Galaxy Buds 4 Pro — discover wearables that redefine fitness, health tracking, and audio experience.</p>
+            <div class="slide-price-row">
+                <span class="slide-price-label">Starting at</span>
+                <span class="slide-price-new" style="background: linear-gradient(135deg, #f59e0b, #ef4444); -webkit-background-clip: text; background-clip: text;">$199</span>
+            </div>
+            <div class="slide-cta-group">
+                <a href="{{ url_for('products', category='wearables') }}" class="btn btn-primary btn-lg slide-cta" style="background: linear-gradient(135deg, #f59e0b, #ef4444);">⌚ Shop Wearables</a>
+                <a href="{{ url_for('products', sort='price_low') }}" class="btn btn-glass btn-lg slide-cta">View All Deals →</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 4: Tablets -->
+    <div class="carousel-slide" data-slide="3">
+        <div class="slide-bg">
+            <img src="{{ url_for('static', filename='images/ipad-pro-m5.png') }}" alt="iPad Pro M5" class="slide-product-img slide-img-right" loading="lazy">
+            <div class="slide-gradient" style="--slide-accent: #10b981; --slide-accent-alt: #06b6d4;"></div>
+        </div>
+        <div class="container slide-content">
+            <div class="slide-badge" style="background: linear-gradient(135deg, rgba(16,185,129,0.2), rgba(6,182,212,0.2)); border-color: rgba(16,185,129,0.4);">📱 BACK TO SCHOOL — EXTRA 15% OFF</div>
+            <h1 class="slide-title">
+                iPad Pro<br>
+                <span class="gradient-text" style="background: linear-gradient(135deg, #10b981, #06b6d4); -webkit-background-clip: text; background-clip: text;">M5 Chip</span>
+            </h1>
+            <p class="slide-desc">The most powerful tablet ever. OLED display, M5 chip with hardware ray tracing, and Apple Pencil Pro support for ultimate creativity.</p>
+            <div class="slide-price-row">
+                <span class="slide-price-old">$1,299</span>
+                <span class="slide-price-new" style="background: linear-gradient(135deg, #10b981, #06b6d4); -webkit-background-clip: text; background-clip: text;">$1,099</span>
+                <span class="slide-save-badge" style="background: linear-gradient(135deg, #10b981, #06b6d4);">SAVE $200</span>
+            </div>
+            <div class="slide-cta-group">
+                <a href="{{ url_for('products', category='tablets') }}" class="btn btn-primary btn-lg slide-cta" style="background: linear-gradient(135deg, #10b981, #06b6d4);">📱 Shop Tablets</a>
+                <a href="{{ url_for('products') }}" class="btn btn-glass btn-lg slide-cta">Browse All →</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 5: Galaxy Flagship -->
+    <div class="carousel-slide" data-slide="4">
+        <div class="slide-bg">
+            <img src="{{ url_for('static', filename='images/galaxy-s26-ultra.png') }}" alt="Galaxy S26 Ultra" class="slide-product-img slide-img-right" loading="lazy">
+            <div class="slide-gradient" style="--slide-accent: #ec4899; --slide-accent-alt: #8b5cf6;"></div>
+        </div>
+        <div class="container slide-content">
+            <div class="slide-badge" style="background: linear-gradient(135deg, rgba(236,72,153,0.2), rgba(139,92,246,0.2)); border-color: rgba(236,72,153,0.4);">🚀 FLASH SALE — ENDS TONIGHT</div>
+            <h1 class="slide-title">
+                Galaxy S26<br>
+                <span class="gradient-text" style="background: linear-gradient(135deg, #ec4899, #8b5cf6); -webkit-background-clip: text; background-clip: text;">Ultra</span>
+            </h1>
+            <p class="slide-desc">Samsung's AI-powered flagship with 200MP camera, Galaxy AI features, S Pen integration, and the brightest display ever on a smartphone.</p>
+            <div class="slide-price-row">
+                <span class="slide-price-old">$1,399</span>
+                <span class="slide-price-new" style="background: linear-gradient(135deg, #ec4899, #8b5cf6); -webkit-background-clip: text; background-clip: text;">$1,099</span>
+                <span class="slide-save-badge" style="background: linear-gradient(135deg, #ec4899, #8b5cf6);">SAVE $300</span>
+            </div>
+            <div class="slide-cta-group">
+                <a href="{{ url_for('products') }}" class="btn btn-primary btn-lg slide-cta" style="background: linear-gradient(135deg, #ec4899, #8b5cf6);">🛍️ Grab the Deal</a>
+                <a href="{{ url_for('products', category='smartphones') }}" class="btn btn-glass btn-lg slide-cta">More Phones →</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Carousel Controls -->
+    <button class="carousel-arrow carousel-prev" id="carousel-prev" aria-label="Previous slide">❮</button>
+    <button class="carousel-arrow carousel-next" id="carousel-next" aria-label="Next slide">❯</button>
+
+    <!-- Dot Indicators with Progress -->
+    <div class="carousel-indicators" id="carousel-indicators">
+        <button class="carousel-dot active" data-index="0" aria-label="Go to slide 1">
+            <span class="dot-progress"></span>
+        </button>
+        <button class="carousel-dot" data-index="1" aria-label="Go to slide 2">
+            <span class="dot-progress"></span>
+        </button>
+        <button class="carousel-dot" data-index="2" aria-label="Go to slide 3">
+            <span class="dot-progress"></span>
+        </button>
+        <button class="carousel-dot" data-index="3" aria-label="Go to slide 4">
+            <span class="dot-progress"></span>
+        </button>
+        <button class="carousel-dot" data-index="4" aria-label="Go to slide 5">
+            <span class="dot-progress"></span>
+        </button>
+    </div>
+
+    <!-- Stats Bar -->
+    <div class="carousel-stats-bar">
+        <div class="container">
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <div class="stat-number">{{ total_products }}+</div>
+                    <div class="stat-label">Products</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="stat-number">{{ total_brands }}+</div>
+                    <div class="stat-label">Brands</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">Support</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="stat-number">Free</div>
+                    <div class="stat-label">Shipping</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════ CATEGORIES ═══════════ -->
+<section class="section">
+    <div class="container">
+        <div class="section-header">
+            <h2>Shop by Category</h2>
+            <p>Browse our curated collection of the latest tech across all categories</p>
+        </div>
+        <div class="grid-3" style="max-width: 900px; margin: 0 auto;">
+            {% for cat in categories %}
+            <a href="{{ url_for('products', category=cat.slug) }}" class="category-card">
+                {{ category_icon(cat.slug, cat.icon) }}
+                <span class="cat-name">{{ cat.name }}</span>
+                <span class="cat-count">{{ cat.product_count }} products</span>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════ FEATURED PRODUCTS ═══════════ -->
+{% if featured %}
+<section class="section" style="background: var(--bg-secondary);">
+    <div class="container">
+        <div class="section-header">
+            <h2>⭐ Featured Products</h2>
+            <p>Hand-picked top products our customers love the most</p>
+        </div>
+        <div class="grid-4">
+            {% for product in featured %}
+            {{ product_card(product) }}
+            {% endfor %}
+        </div>
+        <div style="text-align: center; margin-top: 40px;">
+            <a href="{{ url_for('products') }}" class="btn btn-outline btn-lg">View All Products →</a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- ═══════════ LATEST ARRIVALS ═══════════ -->
+{% if latest %}
+<section class="section">
+    <div class="container">
+        <div class="section-header">
+            <h2>🆕 Latest Arrivals</h2>
+            <p>The newest additions to our ever-growing collection</p>
+        </div>
+        <div class="grid-4">
+            {% for product in latest %}
+            {{ product_card(product) }}
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- ═══════════ WHY CHOOSE US ═══════════ -->
+<section class="section" style="background: var(--bg-secondary);">
+    <div class="container">
+        <div class="section-header">
+            <h2>Why Choose Mobile Mart?</h2>
+            <p>We're committed to providing the best shopping experience</p>
+        </div>
+        <div class="grid-4">
+            <a href="{{ url_for('why_us_detail', feature_slug='fast-delivery') }}" class="category-card feature-card-link">
+                <div class="cat-icon-badge cat-icon-feature-1">
+                    <svg class="cat-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                    </svg>
+                </div>
+                <span class="cat-name">Fast Delivery</span>
+                <span class="cat-count">Free shipping on all orders</span>
+                <span class="feature-learn-more">Learn details →</span>
+            </a>
+            <a href="{{ url_for('why_us_detail', feature_slug='secure-shopping') }}" class="category-card feature-card-link">
+                <div class="cat-icon-badge cat-icon-feature-2">
+                    <svg class="cat-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    </svg>
+                </div>
+                <span class="cat-name">Secure Shopping</span>
+                <span class="cat-count">100% safe checkout</span>
+                <span class="feature-learn-more">Learn details →</span>
+            </a>
+            <a href="{{ url_for('why_us_detail', feature_slug='authentic-products') }}" class="category-card feature-card-link">
+                <div class="cat-icon-badge cat-icon-feature-3">
+                    <svg class="cat-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 3h12l4 6-10 12L2 9z"/>
+                    </svg>
+                </div>
+                <span class="cat-name">Authentic Products</span>
+                <span class="cat-count">100% genuine guarantee</span>
+                <span class="feature-learn-more">Learn details →</span>
+            </a>
+            <a href="{{ url_for('why_us_detail', feature_slug='easy-returns') }}" class="category-card feature-card-link">
+                <div class="cat-icon-badge cat-icon-feature-4">
+                    <svg class="cat-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="23 4 23 10 17 10"/>
+                        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+                    </svg>
+                </div>
+                <span class="cat-name">Easy Returns</span>
+                <span class="cat-count">30-day return policy</span>
+                <span class="feature-learn-more">Learn details →</span>
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
