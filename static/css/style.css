@@ -68,6 +68,9 @@
 
 html {
     scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    text-size-adjust: 100%;
 }
 
 body {
@@ -76,6 +79,7 @@ body {
     color: var(--text-primary);
     line-height: 1.6;
     min-height: 100vh;
+    width: 100%;
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
 }
@@ -3128,6 +3132,15 @@ div:has(> table.data-table) {
 }
 
 @media (max-width: 768px) {
+    input[type="text"],
+    input[type="search"],
+    input[type="number"],
+    input[type="email"],
+    input[type="password"],
+    select,
+    textarea {
+        font-size: 16px !important;
+    }
     .feature-details-wrapper {
         grid-template-columns: 1fr;
     }
