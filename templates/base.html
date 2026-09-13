@@ -42,12 +42,23 @@
                 {% for cat in all_categories[:4] %}
                 <li><a href="{{ url_for('products', category=cat.slug) }}">{{ cat.icon }} {{ cat.name }}</a></li>
                 {% endfor %}
+                <li class="mobile-nav-divider"></li>
+                {% if current_user.is_authenticated %}
+                    {% if current_user.is_admin %}
+                    <li class="mobile-only-nav"><a href="{{ url_for('admin_dashboard') }}">⚙️ Admin Dashboard</a></li>
+                    {% endif %}
+                    <li class="mobile-only-nav"><a href="{{ url_for('profile') }}">👤 {{ current_user.username }}</a></li>
+                    <li class="mobile-only-nav"><a href="{{ url_for('logout') }}">Logout</a></li>
+                {% else %}
+                    <li class="mobile-only-nav"><a href="{{ url_for('login') }}">Sign In</a></li>
+                    <li class="mobile-only-nav"><a href="{{ url_for('register') }}">Sign Up</a></li>
+                {% endif %}
             </ul>
 
             <div class="navbar-actions">
                 <form class="nav-search" action="{{ url_for('search') }}" method="GET">
                     <span class="search-icon">🔍</span>
-                    <input type="text" name="q" placeholder="Search products..." value="{{ request.args.get('q', '') }}" autocomplete="off">
+                    <input type="text" name="q" placeholder="Search..." value="{{ request.args.get('q', '') }}" autocomplete="off">
                 </form>
 
                 <a href="{{ url_for('cart') }}" class="cart-btn" data-tooltip="Shopping Cart">
@@ -61,13 +72,13 @@
 
                 {% if current_user.is_authenticated %}
                     {% if current_user.is_admin %}
-                    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-sm btn-outline">⚙️ Admin</a>
+                    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-sm btn-outline desktop-only-btn">⚙️ Admin</a>
                     {% endif %}
-                    <a href="{{ url_for('profile') }}" class="btn btn-sm btn-secondary">👤 {{ current_user.username }}</a>
-                    <a href="{{ url_for('logout') }}" class="btn btn-sm btn-secondary">Logout</a>
+                    <a href="{{ url_for('profile') }}" class="btn btn-sm btn-secondary desktop-only-btn">👤 {{ current_user.username }}</a>
+                    <a href="{{ url_for('logout') }}" class="btn btn-sm btn-secondary desktop-only-btn">Logout</a>
                 {% else %}
-                    <a href="{{ url_for('login') }}" class="btn btn-sm btn-secondary">Sign In</a>
-                    <a href="{{ url_for('register') }}" class="btn btn-sm btn-primary">Sign Up</a>
+                    <a href="{{ url_for('login') }}" class="btn btn-sm btn-secondary desktop-only-btn">Sign In</a>
+                    <a href="{{ url_for('register') }}" class="btn btn-sm btn-primary desktop-only-btn">Sign Up</a>
                 {% endif %}
 
                 <button class="mobile-toggle" id="mobile-toggle" aria-label="Toggle menu">☰</button>
